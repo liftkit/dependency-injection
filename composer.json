@@ -1,10 +1,12 @@
 {
+	"name": "liftkit/dependency-injection",
+	"description": "Dependency injection library for LiftKit",
 	"license": "LGP-2.1",
 	"authors": [
 		{
 			"name": "Ryan Williams",
 			"email": "rwilliams@stream9.net",
-			"homepage": "stream9.net",
+			"homepage": "https://www.stream9.net",
 			"role": "Developer"
 		}
 	],
