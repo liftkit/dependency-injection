@@ -10,9 +10,14 @@
 			"role": "Developer"
 		}
 	],
+	"require-dev": {
+		"phpunit/phpunit": "4.5.*",
+		"phpunit/dbunit": "1.2.*"
+	},
 	"autoload": {
 		"psr-4": {
-			"LiftKit\\DependencyInjection\\": "src/"
+			"LiftKit\\DependencyInjection\\": "src/",
+			"LiftKit\\Tests\\Unit\\DependencyInjection\\": "tests/unit/"
 		}
 	}
 }

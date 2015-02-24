@@ -60,10 +60,7 @@
 		public function getParameter ($identifier)
 		{
 			if (!isset($this->parameters[$identifier])) {
-				throw new DependencyException('Unknown parameter '.var_export(
-						$identifier,
-						true
-					).'.');
+				throw new DependencyException('Unknown parameter ' . var_export($identifier, true) . '.');
 			}
 
 			return $this->parameters[$identifier];
@@ -129,10 +126,7 @@
 		public function getObject ($identifier, $parameters = array())
 		{
 			if (!isset($this->rules[$identifier])) {
-				throw new DependencyException('Unknown object or rule '.var_export(
-						$identifier,
-						true
-					).'.');
+				throw new DependencyException('Unknown object or rule ' . var_export($identifier, true) . '.');
 			}
 
 			if (!is_array($parameters)) {
