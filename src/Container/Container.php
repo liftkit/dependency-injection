@@ -41,7 +41,6 @@
 		 *
 		 * @returns self
 		 */
-
 		public function setParameter ($identifier, $value)
 		{
 			$this->parameters[$identifier] = $value;
@@ -56,7 +55,6 @@
 		 * @return mixed
 		 * @throws DependencyException
 		 */
-
 		public function getParameter ($identifier)
 		{
 			if (!isset($this->parameters[$identifier])) {
@@ -75,7 +73,6 @@
 		 * @returns self
 		 * @throws DependencyException
 		 */
-
 		public function setRule ($identifier, $rule, $singleton = false)
 		{
 			if (!is_callable($rule)) {
@@ -92,6 +89,19 @@
 			);
 
 			return $this;
+		}
+
+
+		/**
+		 * @param string   $identifier
+		 * @param callable $rule
+		 *
+		 * @returns self
+		 * @throws DependencyException
+		 */
+		public function setSingletonRule ($identifier, $rule)
+		{
+			return $this->setRule($identifier, $rule, true);
 		}
 
 
