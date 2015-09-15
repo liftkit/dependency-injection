@@ -99,8 +99,14 @@
 		 * @returns self
 		 * @throws DependencyException
 		 */
-		public function setSingletonRule ($identifier, $rule)
+		public function setSingletonRule ($identifier, $rule, $force = false)
 		{
+			if ($force && isset($this->instances[$identifier])) {
+				unset($this->instances[$identifier]);
+			} else if (isset($this->instances[$identifier])) {
+				throw new DependencyException('Attempt to override singleton rule ' . $identifier);
+			}
+
 			return $this->setRule($identifier, $rule, true);
 		}
 

@@ -84,6 +84,62 @@
 		}
 
 
+		/**
+		 * @expectedException \LiftKit\DependencyInjection\Exception\Dependency
+		 */
+		public function testOverrideSingletonFails ()
+		{
+			$this->container->setSingletonRule(
+				'test',
+				function ()
+				{
+					return new stdClass;
+				}
+			);
+
+			$this->container->getObject('test');
+
+			$this->container->setSingletonRule(
+				'test',
+				function ()
+				{
+					return new stdClass;
+				}
+			);
+		}
+
+
+		public function testOverrideSingleton ()
+		{
+			$object1 = new stdClass;
+			$object2 = new stdClass;
+
+			$this->container->setSingletonRule(
+				'test',
+				function () use ($object1)
+				{
+					return $object1;
+				}
+			);
+
+			$this->container->getObject('test');
+
+			$this->container->setSingletonRule(
+				'test',
+				function () use ($object2)
+				{
+					return $object2;
+				},
+				true
+			);
+
+			$this->assertSame(
+				$object2,
+				$this->container->getObject('test')
+			);
+		}
+
+
 		public function testComposedRules ()
 		{
 			$this->container->setRule(
