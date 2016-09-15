@@ -29,7 +29,7 @@
 			$className       = $this->classIndex->resolveClassToAlias($this->className);
 			$reflectionClass = new ReflectionClass($className);
 			$constructor     = $reflectionClass->getConstructor();
-			$finalParams     = $params;
+			$resolvedParams  = array();
 
 			if ($constructor) {
 				$constructorParameters = $constructor->getParameters();
@@ -45,7 +45,7 @@
 						throw new Dependency('Only valid type-hinted classnames can be auto-resolved.');
 					}
 
-					$className = $class->getName();
+					$className  = $class->getName();
 					$identifier = $this->classIndex->resolveClassToRule($className);
 
 					if (! $identifier) {
@@ -53,12 +53,11 @@
 						$this->container->bindRuleToClass($identifier, $className);
 					}
 
-					array_unshift(
-						$finalParams,
-						$this->container->getObject($identifier)
-					);
+					$resolvedParams[] = $this->container->getObject($identifier);
 				}
 			}
+
+			$finalParams = array_merge($resolvedParams, $params);
 
 			return $reflectionClass->newInstanceArgs($finalParams);
 		}

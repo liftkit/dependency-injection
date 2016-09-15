@@ -5,6 +5,7 @@
 	use LiftKit\DependencyInjection\Container\Container;
 	use LiftKit\Tests\Mock\DependencyInjection\ClassC;
 	use LiftKit\Tests\Mock\DependencyInjection\ClassD;
+	use LiftKit\Tests\Mock\DependencyInjection\ClassE;
 	use PHPUnit_Framework_TestCase;
 	use stdClass;
 
@@ -262,9 +263,6 @@
 		}
 
 
-		/**
-		 * @group current
-		 */
 		public function testWithParameters ()
 		{
 			$this->container->bindRuleToClass('D', ClassD::class);
@@ -284,5 +282,19 @@
 
 			$this->assertSame($b, $object->getA());
 			$this->assertSame($b, $object->getC()->getA());
+		}
+
+
+		/**
+		 * @group current
+		 */
+		public function testWithMultipleParameters ()
+		{
+			$this->container->bindRuleToClass('E', ClassE::class);
+
+			$object = $this->container->getObject('E', [new ClassA, new ClassB]);
+
+			$this->assertSame(ClassA::class, get_class($object->getA()));
+			$this->assertSame(ClassB::class, get_class($object->getB()));
 		}
 	}

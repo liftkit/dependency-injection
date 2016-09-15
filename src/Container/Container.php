@@ -41,13 +41,9 @@
 		protected $classIndex;
 
 
-		public function __construct (ClassIndex $classIndex = null)
+		public function __construct ()
 		{
-			if ($classIndex) {
-				$this->classIndex = $classIndex;
-			} else {
-				$this->classIndex = new ClassIndex;
-			}
+			$this->classIndex = new ClassIndex;
 		}
 
 
