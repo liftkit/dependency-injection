@@ -42,6 +42,10 @@
 					$class = $constructorParam->getClass();
 
 					if (! $class) {
+						if ($constructorParam->isOptional()) {
+							break;
+						}
+
 						throw new Dependency('Only valid type-hinted classnames can be auto-resolved.');
 					}
 

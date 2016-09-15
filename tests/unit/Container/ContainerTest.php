@@ -3,14 +3,15 @@
 	namespace LiftKit\Tests\Unit\DependencyInjection\Container;
 
 	use LiftKit\DependencyInjection\Container\Container;
-	use LiftKit\Tests\Mock\DependencyInjection\ClassC;
-	use LiftKit\Tests\Mock\DependencyInjection\ClassD;
-	use LiftKit\Tests\Mock\DependencyInjection\ClassE;
 	use PHPUnit_Framework_TestCase;
 	use stdClass;
 
 	use LiftKit\Tests\Mock\DependencyInjection\ClassA;
 	use LiftKit\Tests\Mock\DependencyInjection\ClassB;
+	use LiftKit\Tests\Mock\DependencyInjection\ClassC;
+	use LiftKit\Tests\Mock\DependencyInjection\ClassD;
+	use LiftKit\Tests\Mock\DependencyInjection\ClassE;
+	use LiftKit\Tests\Mock\DependencyInjection\ClassF;
 
 
 	class ContainerTest extends PHPUnit_Framework_TestCase
@@ -285,9 +286,6 @@
 		}
 
 
-		/**
-		 * @group current
-		 */
 		public function testWithMultipleParameters ()
 		{
 			$this->container->bindRuleToClass('E', ClassE::class);
@@ -296,5 +294,24 @@
 
 			$this->assertSame(ClassA::class, get_class($object->getA()));
 			$this->assertSame(ClassB::class, get_class($object->getB()));
+		}
+
+
+		/**
+		 * @group current
+		 */
+		public function testWithOptionalParams ()
+		{
+			$this->container->bindRuleToClass('F', ClassF::class);
+
+			$object = $this->container->getObject('F');
+
+			$this->assertSame(ClassA::class, get_class($object->getA()));
+			$this->assertEquals(true, $object->getParam());
+
+			$object = $this->container->getObject('F', [false]);
+
+			$this->assertSame(ClassA::class, get_class($object->getA()));
+			$this->assertEquals(false, $object->getParam());
 		}
 	}
