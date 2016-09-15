@@ -4,18 +4,19 @@
 	namespace LiftKit\DependencyInjection\Rule;
 
 	use LiftKit\DependencyInjection\Container\Container;
+	use LiftKit\DependencyInjection\ClassIndex\ClassIndex;
 	use LiftKit\DependencyInjection\InstanceStore\InstanceStore;
 
 
-	class SingletonRule extends CallbackRule
+	class SingletonClassBindingRule extends ClassBindingRule
 	{
 		protected $instanceStore;
 
 
 
-		public function __construct (Container $container, callable $callback)
+		public function __construct (Container $container, ClassIndex $classIndex, $className)
 		{
-			parent::__construct($container, $callback);
+			parent::__construct($container, $classIndex, $className);
 
 			$this->instanceStore = new InstanceStore;
 		}

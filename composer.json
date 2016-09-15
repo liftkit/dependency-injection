@@ -17,7 +17,8 @@
 	"autoload": {
 		"psr-4": {
 			"LiftKit\\DependencyInjection\\": "src/",
-			"LiftKit\\Tests\\Unit\\DependencyInjection\\": "tests/unit/"
+			"LiftKit\\Tests\\Unit\\DependencyInjection\\": "tests/unit/",
+			"LiftKit\\Tests\\Mock\\DependencyInjection\\": "tests/mock/"
 		}
 	}
 }

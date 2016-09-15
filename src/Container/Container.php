@@ -4,10 +4,14 @@
 
 
 	use LiftKit\DependencyInjection\Exception\Dependency as DependencyException;
+	use LiftKit\DependencyInjection\Exception\Dependency;
 	use LiftKit\DependencyInjection\Rule\CallbackRule;
+	use LiftKit\DependencyInjection\Rule\ClassBindingRule;
+	use LiftKit\DependencyInjection\Rule\SingletonClassBindingRule;
 	use LiftKit\DependencyInjection\Rule\Rule;
-	use LiftKit\DependencyInjection\Rule\SingletonRule;
+	use LiftKit\DependencyInjection\Rule\SingletonCallbackRule;
 	use LiftKit\DependencyInjection\Rule\StoredObjectRule;
+	use LiftKit\DependencyInjection\ClassIndex\ClassIndex;
 
 
 	/**
@@ -15,7 +19,6 @@
 	 *
 	 * @package LiftKit\DependencyInjection\Container
 	 */
-
 	class Container
 	{
 		/**
@@ -30,6 +33,22 @@
 		 */
 
 		protected $parameters = array();
+
+
+		/**
+		 * @var ClassIndex
+		 */
+		protected $classIndex;
+
+
+		public function __construct (ClassIndex $classIndex = null)
+		{
+			if ($classIndex) {
+				$this->classIndex = $classIndex;
+			} else {
+				$this->classIndex = new ClassIndex;
+			}
+		}
 
 
 		/**
@@ -54,7 +73,7 @@
 		 */
 		public function getParameter ($identifier)
 		{
-			if (!isset($this->parameters[$identifier])) {
+			if (! isset($this->parameters[$identifier])) {
 				throw new DependencyException('Unknown parameter ' . var_export($identifier, true) . '.');
 			}
 
@@ -99,7 +118,7 @@
 				throw new DependencyException('Attempt to override singleton rule ' . $identifier);
 			}
 
-			$this->rules[$identifier] = new SingletonRule($this, $rule);
+			$this->rules[$identifier] = new SingletonCallbackRule($this, $rule);
 
 			return $this;
 		}
@@ -139,5 +158,69 @@
 			$rule = $this->rules[$identifier];
 
 			return $rule->resolve($parameters);
+		}
+
+
+		/**
+		 * @param $identifier
+		 * @param $className
+		 *
+		 * @return $this
+		 */
+		public function bindRuleToClass ($identifier, $className)
+		{
+			$this->classIndex->setRuleToClass($identifier, $className);
+
+			$this->rules[$identifier] = new ClassBindingRule($this, $this->classIndex, $className);
+
+			return $this;
+		}
+
+
+		/**
+		 * @param $identifier
+		 * @param $className
+		 *
+		 * @return $this
+		 */
+		public function bindSingletonRuleToClass ($identifier, $className)
+		{
+			$this->classIndex->setRuleToClass($identifier, $className);
+
+			$this->rules[$identifier] = new SingletonClassBindingRule($this, $this->classIndex, $className);
+
+			return $this;
+		}
+
+
+		/**
+		 * @param $identifier
+		 * @param $className
+		 *
+		 * @return $this
+		 */
+		public function bindClassToRule ($className, $identifier)
+		{
+			if (! isset($this->rules[$identifier])) {
+				throw new Dependency('Class ' . $className . ' set into invalid rule ' . $identifier);
+			}
+
+			$this->classIndex->setClassToRule($identifier, $className);
+
+			return $this;
+		}
+
+
+		/**
+		 * @param $className
+		 * @param $resolvedClassName
+		 *
+		 * @return $this
+		 */
+		public function bindClassToAlias ($className, $resolvedClassName)
+		{
+			$this->classIndex->setClassToAlias($className, $resolvedClassName);
+
+			return $this;
 		}
 	}
