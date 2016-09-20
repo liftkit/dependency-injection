@@ -137,10 +137,9 @@ $otherObject = $container->getObject('SomeRule');
 ## Automatic resolution
 
 The container can also bind a rule to a class. An instance of a class
-can be created automatially by looking at the type hints of each
+can be created automatially by looking at the typehints of each
 constructor argument. In the case below, and instance of `B` is 
-automatically created before creating an instance of `A`. The newly-
-created instance of B is then injected into the constructor of `A`.
+automatically created before creating an instance of `A`. The newly-created instance of B is then injected into the constructor of `A`.
 
 ```php
 class A
@@ -205,7 +204,7 @@ $b = $a->getB();
 
 ## Automatic resolution with parameters
 
-Sometimes, there are additional parameters that need to be passed to the constructor of a new instance that is being automatically constructed. Below the variables `$param1` and `$param2` will be injectied into `C`'s constructor, while `B` will be created by the rule `'GiveMeANewB'` above. Any additional parameters must call at the end of the constructor's list of parameters.
+Sometimes, there are additional parameters that need to be passed to the constructor of a new instance that is being automatically constructed. Below the variables `$param1` and `$param2` will be injectied into `C`'s constructor, while `B` will be created by the rule `'GiveMeANewB'` above. Any additional parameters must fall at the end of the constructor's list of parameters.
 
 ```php
 class C
@@ -216,7 +215,7 @@ class C
   
   public function __construct (B $b, $param1, $param2)
   {
-    $this->b = $b;
+    $this->b      = $b;
     $this->param1 = $param1;
     $this->param2 = $param2;
   }
