@@ -12,7 +12,7 @@ $container = new Container;
 
 ## Rules
 
-A rule is an anonymouse function that defines how to create an object.
+A rule is an anonymous function that defines how to create an object.
 
 ```php
 $container->setRule(
@@ -132,4 +132,153 @@ $container->storeObject('SomeRule', $someObject);
 $otherObject = $container->getObject('SomeRule');
 
 // $someObject and $otherObject are the some object
+```
+
+## Automatic resolution
+
+The container can also bind a rule to a class. An instance of a class
+can be created automatially by looking at the type hints of each
+constructor argument. In the case below, and instance of `B` is 
+automatically created before creating an instance of `A`. The newly-
+created instance of B is then injected into the constructor of `A`.
+
+```php
+class A
+{
+  private $b;
+  
+  public function __construct (B $b)
+  {
+    $this->b = $b;
+  }
+  
+  public function getB ()
+  {
+    return $this->b;
+  }
+}
+
+class B
+{
+  // placeholder class
+}
+
+$container->bindRuleToClass(
+  'GiveMeANewA',
+  A::class
+);
+
+$a = $container->getObject('GiveMeANewA');
+$b = $a->getB();
+
+// $a is a new instance of A. $b is a new instance of b.
+```
+
+## Automatic resolution with rules
+
+In some cases, you may need to tell the injector to create an instance following a different rule when it encounters the
+typehint of a certain class instead. In the example below, a rule is created for the construction of `B`. When the container realizes it needs an instance of `B` when creating an `A`, it will follow that rule to create `B` first. In this case, `A`'s constructor was injected with an instance of B created by the rule `'GiveMeANewB'` to create `$a`.
+
+```php
+$container->setRule(
+  'GiveMeANewB',
+  function ()
+  {
+    $b = new B;
+    
+    $b->createdByRule = true;
+    
+    return $b;
+  }
+);
+
+$container->bindClassToRule(
+  B::class,
+  'GiveMeANewB'
+);
+
+$a = $container->getObject('GiveMeANewA');
+$b = $a->getB();
+
+// $b->createdByRule is true
+```
+
+## Automatic resolution with parameters
+
+Sometimes, there are additional parameters that need to be passed to the constructor of a new instance that is being automatically constructed. Below the variables `$param1` and `$param2` will be injectied into `C`'s constructor, while `B` will be created by the rule `'GiveMeANewB'` above. Any additional parameters must call at the end of the constructor's list of parameters.
+
+```php
+class C
+{
+  private $b;
+  private $param1;
+  private $param2;
+  
+  public function __construct (B $b, $param1, $param2)
+  {
+    $this->b = $b;
+    $this->param1 = $param1;
+    $this->param2 = $param2;
+  }
+  
+  public function getB ()
+  {
+    return $this->b;
+  }
+  
+  public function getParam1 ()
+  {
+    return $this->param1;
+  }
+  
+  public function getParam2 ()
+  {
+    return $this->param2;
+  }
+}
+
+$container->bindRuleToClass(
+  'GiveMeANewC',
+  C::class
+);
+
+$param1 = 1;
+$param2 = 2;
+
+$c = $container->getObject(
+  'GiveMeANewC',
+  [
+    $param1,
+    $param2,
+  ]
+);
+
+$b = $c->getB();
+$cParam1 = $c->getParam1();
+$cParam2 = $c->getParam2();
+
+// $b is an instance of B
+// $cParam1 is 1
+// $cParam2 is 2
+```
+
+## Binding classes to aliases
+
+Sometimes, you may want the container to resolve to a subclass when it encounters a particular typehint. In the example below, a new instance of `D` will be injected into `A`, instead of an instance of `B`.
+
+```php
+class D extends B
+{
+  // placeholder class
+}
+
+$container->bindClassToAlias(
+  B::class,
+  D::class
+);
+
+$a = $container->getObject('GiveMeANewA');
+$d = $a->getB();
+
+// $d is an instance of D
 ```
