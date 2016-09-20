@@ -1,6 +1,6 @@
 # Dependency Injection
 
-A full-featured dependency injection library, with automatic class-resolution.
+A simple but featured dependency injection library, with automatic class-resolution.
 
 ## Create a new container
 
