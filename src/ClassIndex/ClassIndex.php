@@ -97,7 +97,11 @@
 
 			$className = $this->resolveAliasToClass($className);
 
-			return $this->classToRuleIndex[$className];
+			if (isset($this->classToRuleIndex[$className])) {
+				return $this->classToRuleIndex[$className];
+			} else {
+				return null;
+			}
 		}
 
 

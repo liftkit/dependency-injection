@@ -12,6 +12,7 @@
 	use LiftKit\DependencyInjection\Rule\SingletonCallbackRule;
 	use LiftKit\DependencyInjection\Rule\StoredObjectRule;
 	use LiftKit\DependencyInjection\ClassIndex\ClassIndex;
+	use Psr\Container\ContainerInterface;
 
 
 	/**
@@ -19,7 +20,7 @@
 	 *
 	 * @package LiftKit\DependencyInjection\Container
 	 */
-	class Container
+	class Container implements ContainerInterface
 	{
 		/**
 		 * @var Rule[]
@@ -147,13 +148,51 @@
 		 */
 		public function getObject ($identifier, array $parameters = array())
 		{
-			if (! isset($this->rules[$identifier])) {
-				throw new DependencyException('Unknown object or rule ' . var_export($identifier, true) . '.');
+			if (isset($this->rules[$identifier])) {
+				$rule = $this->rules[$identifier];
+
+			} else if (class_exists($identifier)) {
+				if ($this->classIndex->resolveClassToRule($identifier)) {
+					$identifier = $this->classIndex->resolveClassToRule($identifier);
+					$rule = $this->rules[$identifier];
+
+				} else {
+					if (! count($parameters)) {
+						$rule = new SingletonClassBindingRule(
+							$this,
+							$this->classIndex,
+							$identifier
+						);
+
+					} else {
+						$rule = new ClassBindingRule(
+							$this,
+							$this->classIndex,
+							$identifier
+						);
+					}
+
+					$this->rules[$identifier] = $rule;
+				}
+
+			} else {
+				throw new DependencyException('Unknown class, object or rule ' . var_export($identifier, true) . '.');
 			}
 
-			$rule = $this->rules[$identifier];
 
 			return $rule->resolve($parameters);
+		}
+
+
+		public function get ($identifier)
+		{
+			return $this->getObject($identifier);
+		}
+
+
+		public function has ($identifier)
+		{
+			return isset($this->rules[$identifier]);
 		}
 
 
@@ -218,5 +257,11 @@
 			$this->classIndex->setClassToAlias($className, $resolvedClassName);
 
 			return $this;
+		}
+
+
+		public function registerClass ($className)
+		{
+			$this->bindRuleToClass($className, $className);
 		}
 	}

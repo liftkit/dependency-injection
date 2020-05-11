@@ -20,5 +20,8 @@
 			"LiftKit\\Tests\\Unit\\DependencyInjection\\": "tests/unit/",
 			"LiftKit\\Tests\\Mock\\DependencyInjection\\": "tests/mock/"
 		}
+	},
+	"require": {
+		"psr/container": "^1.0"
 	}
 }

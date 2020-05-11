@@ -12,6 +12,7 @@
 	use LiftKit\Tests\Mock\DependencyInjection\ClassD;
 	use LiftKit\Tests\Mock\DependencyInjection\ClassE;
 	use LiftKit\Tests\Mock\DependencyInjection\ClassF;
+	use LiftKit\Tests\Mock\DependencyInjection\ClassG;
 
 
 	class ContainerTest extends PHPUnit_Framework_TestCase
@@ -313,5 +314,101 @@
 
 			$this->assertSame(ClassA::class, get_class($object->getA()));
 			$this->assertEquals(false, $object->getParam());
+		}
+
+
+		public function testGetClassWithNoRule ()
+		{
+			$g = $this->container->getObject(ClassG::class);
+
+			$this->assertEquals(ClassG::class, get_class($g));
+
+			$a = $g->getA();
+
+			$this->assertEquals(ClassA::class, get_class($a));
+		}
+
+
+		public function testGetClassWithNoRuleWithMultipleParameters ()
+		{
+			$object = $this->container->getObject(ClassE::class, [new ClassA, new ClassB]);
+
+			$this->assertSame(ClassA::class, get_class($object->getA()));
+			$this->assertSame(ClassB::class, get_class($object->getB()));
+		}
+
+
+		public function testGetAliasClassWithNoRule ()
+		{
+			$this->container->bindClassToAlias(ClassA::class, ClassB::class);
+
+			$object = $this->container->getObject(ClassA::class);
+
+			$this->assertEquals(ClassB::class, get_class($object));
+		}
+
+
+		public function testBindClassToRule ()
+		{
+			$b = new ClassB;
+
+			$this->container->setRule('A', function () use ($b) {
+				return $b;
+			});
+
+			$this->container->bindClassToRule(ClassA::class, 'A');
+
+			$object1 = $this->container->getObject('A');
+			$object2 = $this->container->getObject(ClassA::class);
+
+			$this->assertSame($b, $object1);
+			$this->assertSame($b, $object2);
+		}
+
+
+		public function testGetClassWithNoRuleSingleton ()
+		{
+			$a1 = $this->container->getObject(ClassA::class);
+			$a2 = $this->container->getObject(ClassA::class);
+
+			$this->assertSame($a1, $a2);
+
+			$e1 = $this->container->getObject(ClassE::class, [new ClassA, new ClassB]);
+			$e2 = $this->container->getObject(ClassE::class, [new ClassA, new ClassB]);
+
+			$this->assertNotSame($e1, $e2);
+		}
+
+
+		public function testGet ()
+		{
+			$a1 = $this->container->getObject(ClassA::class);
+			$a2 = $this->container->get(ClassA::class);
+
+			$this->assertSame($a1, $a2);
+		}
+
+
+		public function testRegisterClass ()
+		{
+			$this->container->registerClass(ClassA::class);
+
+			$a = $this->container->get(ClassA::class);
+
+			$this->assertInstanceOf(ClassA::class, $a);
+		}
+
+
+		public function testHas ()
+		{
+			$this->assertFalse(
+				$this->container->has(ClassA::class)
+			);
+
+			$this->container->registerClass(ClassA::class);
+
+			$this->assertTrue(
+				$this->container->has(ClassA::class)
+			);
 		}
 	}
