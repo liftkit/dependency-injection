@@ -140,10 +140,11 @@
 
 
 		/**
-		 * @param string $identifier
+		 * @template T
+		 * @param class-string<T> $identifier
 		 * @param array  $parameters
+		 * @return T
 		 *
-		 * @return mixed
 		 * @throws DependencyException
 		 */
 		public function getObject ($identifier, array $parameters = array())
@@ -184,12 +185,20 @@
 		}
 
 
+		/**
+		 * @template T
+		 * @param class-string<T> $identifier
+		 * @return T
+		 */
 		public function get ($identifier)
 		{
 			return $this->getObject($identifier);
 		}
 
 
+		/**
+		 * @return bool
+		 */
 		public function has ($identifier)
 		{
 			return isset($this->rules[$identifier]);
