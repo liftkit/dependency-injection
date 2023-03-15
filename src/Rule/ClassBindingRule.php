@@ -39,7 +39,7 @@
 				}
 
 				foreach ($constructorParameters as $index => $constructorParam) {
-					$class = $constructorParam->getClass();
+					$class = $constructorParam->getType();
 
 					if (! $class) {
 						if ($constructorParam->isOptional()) {
